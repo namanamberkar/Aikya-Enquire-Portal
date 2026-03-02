@@ -1,0 +1,17 @@
+{
+  "name": "Aikya Enquiry Manager",
+  "short_name": "Aikya Enq",
+  "description": "Premium Enquiry Management System for Aikya Apartments",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FDFBF8",
+  "theme_color": "#4F200D",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3003/3003984.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
