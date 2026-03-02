@@ -159,20 +159,22 @@
     <nav class="bg-[#F6F1E9] border-b border-[#FF9A00] shadow-sm sticky top-0 z-50 w-full">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-2 cursor-pointer transition-transform hover:scale-105">
-                    <span class="font-brand font-bold text-2xl tracking-[2px] text-brand-900 uppercase">Aikya<span
-                            class="text-brand-500 text-lg ml-1">Apartments</span></span>
+                <div class="flex items-center gap-2 cursor-pointer transition-transform hover:scale-105 shrink-0">
+                    <span
+                        class="font-brand font-bold text-xl sm:text-2xl tracking-[1px] sm:tracking-[2px] text-brand-900 uppercase">Aikya<span
+                            class="text-brand-500 text-base sm:text-lg ml-1">Apartments</span></span>
                 </div>
-                <div class="flex items-center space-x-1 sm:space-x-4">
+                <div class="flex items-center gap-2 sm:gap-4">
                     <button onclick="switchTab('add')" id="tab-add"
-                        class="tab-btn px-4 py-2 text-sm font-medium rounded-full transition-all duration-200 bg-brand-900 text-white shadow-sm ring-1 ring-brand-900/5 hover:bg-brand-500 hover:-translate-y-0.5 whitespace-nowrap">
-                        <span class="flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> New
-                            Enquiry</span>
+                        class="tab-btn p-2 sm:px-4 sm:py-2 text-sm font-medium rounded-full transition-all duration-200 bg-brand-900 text-white shadow-sm ring-1 ring-brand-900/5 hover:bg-brand-500 hover:-translate-y-0.5 whitespace-nowrap">
+                        <span class="flex items-center gap-2"><i data-lucide="plus-circle"
+                                class="w-5 h-5 sm:w-4 sm:h-4"></i> <span class="hidden sm:inline">New
+                                Enquiry</span></span>
                     </button>
                     <button onclick="switchTab('list')" id="tab-list"
-                        class="tab-btn px-4 py-2 text-sm font-bold border-2 border-brand-900 rounded-full text-brand-900 hover:text-white transition-all duration-200 hover:bg-brand-900 whitespace-nowrap">
-                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-4 h-4"></i>
-                            Enquiries</span>
+                        class="tab-btn p-2 sm:px-4 sm:py-2 text-sm font-bold border-2 border-brand-900 rounded-full text-brand-900 hover:text-white transition-all duration-200 hover:bg-brand-900 whitespace-nowrap">
+                        <span class="flex items-center gap-2"><i data-lucide="list" class="w-5 h-5 sm:w-4 sm:h-4"></i>
+                            <span class="hidden sm:inline">Enquiries</span></span>
                     </button>
                 </div>
             </div>
@@ -180,7 +182,7 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-grow w-full max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 py-4 sm:py-8">
 
         <div id="setup-warning"
             class="hidden mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-4">
@@ -199,15 +201,14 @@
                     class="absolute inset-0 shadow-[inset_0_0_0_0_rgba(255,154,0,0.2)] pointer-events-none group-hover:shadow-[inset_0_0_0_1px_rgba(255,154,0,0.5)] transition-all duration-500 rounded-3xl">
                 </div>
 
-                <div class="px-6 py-5 border-b border-brand-100 bg-[#F6F1E9]/40">
-                    <h2 class="text-2xl font-brand font-bold text-brand-900 flex items-center gap-2">
+                <div class="px-4 py-4 sm:px-6 sm:py-5 border-b border-brand-100 bg-[#F6F1E9]/40">
+                    <h2 class="text-xl sm:text-2xl font-brand font-bold text-brand-900 flex items-center gap-2">
                         Record <span>New Enquiry</span>
                     </h2>
-                    <p class="text-sm text-slate-500 mt-1">Fill in the details below to add a new lead to the database.
-                    </p>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Add a new lead to the database.</p>
                 </div>
 
-                <form id="enquiry-form" class="p-6 space-y-5">
+                <form id="enquiry-form" class="p-4 sm:p-6 space-y-3 sm:space-y-5">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div class="space-y-1.5">
                             <label for="name" class="block text-sm font-medium text-slate-700">Full Name</label>
@@ -298,7 +299,7 @@
                     class="absolute inset-0 shadow-[inset_0_0_0_0_rgba(255,154,0,0.2)] pointer-events-none group-hover:shadow-[inset_0_0_0_1px_rgba(255,154,0,0.5)] transition-all duration-500 rounded-3xl">
                 </div>
                 <div
-                    class="px-6 py-5 border-b border-brand-100 bg-[#F6F1E9]/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    class="px-4 py-4 sm:px-6 sm:py-5 border-b border-brand-100 bg-[#F6F1E9]/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h2 class="text-2xl font-brand font-bold text-brand-900 flex items-center gap-2">
                             <i data-lucide="database" class="w-5 h-5 text-brand-500"></i> Enquiry <span>Database</span>
@@ -306,18 +307,18 @@
                         <p class="text-sm text-slate-500 mt-1">View and manage all recorded enquiries.</p>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto z-10 px-0 sm:px-2">
-                        <div class="relative w-full sm:w-72 group">
+                    <div class="flex items-center gap-2 w-full sm:w-auto z-10">
+                        <div class="relative flex-grow sm:w-72 group">
                             <i data-lucide="search"
                                 class="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-brand-500 transition-colors"></i>
-                            <input type="text" id="search-input" placeholder="Search naming, phone, ID..."
-                                class="w-full pl-11 pr-4 py-2.5 rounded-full border border-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm bg-white shadow-sm hover:border-brand-300"
+                            <input type="text" id="search-input" placeholder="Search..."
+                                class="w-full pl-11 pr-4 py-2.5 rounded-full border border-slate-200 placeholder-slate-400 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition-all text-sm bg-white shadow-sm"
                                 oninput="filterTable()">
                         </div>
                         <button onclick="fetchEnquiries()" id="refresh-btn"
-                            class="w-full sm:w-auto px-6 py-2.5 flex items-center justify-center gap-2 text-brand-900 border-2 border-brand-900 hover:text-white hover:bg-brand-900 rounded-full transition-all shadow-sm active:scale-95">
-                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                            <span class="text-sm font-bold">Refresh</span>
+                            class="shrink-0 p-2.5 sm:px-6 sm:py-2.5 flex items-center justify-center gap-2 text-brand-900 border-2 border-brand-900 hover:text-white hover:bg-brand-900 rounded-full transition-all shadow-sm active:scale-95">
+                            <i data-lucide="refresh-cw" class="w-5 h-5 sm:w-4 sm:h-4"></i>
+                            <span class="hidden sm:inline text-sm font-bold">Refresh</span>
                         </button>
                     </div>
                 </div>
