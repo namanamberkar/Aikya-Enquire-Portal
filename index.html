@@ -161,19 +161,19 @@
 
             #enquiries-table td {
                 text-align: left;
-                padding: 0.4rem 1rem;
+                padding: 0.25rem 1rem;
                 border: none;
                 position: relative;
                 white-space: normal !important;
             }
 
             #enquiries-table td:first-child {
-                padding-top: 0.75rem;
+                padding-top: 0.5rem;
                 background: linear-gradient(to right, #F6F1E9 0%, white 100%);
             }
 
             #enquiries-table td:last-child {
-                padding-bottom: 0.75rem;
+                padding-bottom: 0.5rem;
                 background: #FDFBF8;
                 border-top: 1px dashed #FF9A0022;
             }
@@ -197,9 +197,10 @@
                 padding-bottom: 0.4rem;
             }
 
-            /* Position Status select better on mobile */
+            /* Keep Status select compact on mobile */
             #enquiries-table td[data-label="Status"] select {
-                width: 100%;
+                width: fit-content;
+                min-width: 120px;
                 margin-top: 0.25rem;
             }
         }
