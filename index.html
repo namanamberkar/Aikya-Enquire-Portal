@@ -161,19 +161,19 @@
 
             #enquiries-table td {
                 text-align: left;
-                padding: 0.6rem 1.25rem;
+                padding: 0.4rem 1rem;
                 border: none;
                 position: relative;
                 white-space: normal !important;
             }
 
             #enquiries-table td:first-child {
-                padding-top: 1.25rem;
+                padding-top: 0.75rem;
                 background: linear-gradient(to right, #F6F1E9 0%, white 100%);
             }
 
             #enquiries-table td:last-child {
-                padding-bottom: 1.25rem;
+                padding-bottom: 0.75rem;
                 background: #FDFBF8;
                 border-top: 1px dashed #FF9A0022;
             }
@@ -747,23 +747,23 @@
 
                 let sourceIconHtml = '';
                 if (row['Source'] === 'Booking.com') {
-                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#003580]/10 text-[#003580] border border-[#003580]/20 min-w-max"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Booking.com_logo.svg/150px-Booking.com_logo.svg.png" alt="Booking.com" class="h-2 mr-1.5 object-contain"> Booking.com</span>`;
+                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#003580]/10 text-[#003580] border border-[#003580]/20 w-fit"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Booking.com_logo.svg/150px-Booking.com_logo.svg.png" alt="Booking.com" class="h-2 mr-1.5 object-contain"> Booking.com</span>`;
                 } else if (row['Source'] === 'Airbnb') {
-                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF5A5F]/10 text-[#FF5A5F] border border-[#FF5A5F]/20 min-w-max"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/512px-Airbnb_Logo_B%C3%A9lo.svg.png" alt="Airbnb" class="h-2.5 mr-1.5 object-contain"> Airbnb</span>`;
+                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF5A5F]/10 text-[#FF5A5F] border border-[#FF5A5F]/20 w-fit"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Airbnb_Logo_B%C3%A9lo.svg/512px-Airbnb_Logo_B%C3%A9lo.svg.png" alt="Airbnb" class="h-2.5 mr-1.5 object-contain"> Airbnb</span>`;
                 } else if (row['Source'] === 'Direct Booking') {
-                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-brand-500/10 text-brand-900 border border-brand-500/20 min-w-max"><i data-lucide="phone-incoming" class="w-3 h-3 mr-1.5 text-brand-500"></i> Direct</span>`;
+                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-brand-500/10 text-brand-900 border border-brand-500/20 w-fit"><i data-lucide="phone-incoming" class="w-3 h-3 mr-1.5 text-brand-500"></i> Direct</span>`;
                 } else if (row['Source']) {
-                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 min-w-max"><i data-lucide="globe" class="w-3 h-3 mr-1.5"></i> ${row['Source']}</span>`;
+                    sourceIconHtml = `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-50 text-blue-700 border border-blue-200 w-fit"><i data-lucide="globe" class="w-3 h-3 mr-1.5"></i> ${row['Source']}</span>`;
                 }
 
                 let requirementsHtml = `
-                    <div class="flex flex-col gap-2">
+                    <div class="flex flex-col gap-2 w-fit">
                         ${sourceIconHtml}
-                        <div class="flex flex-wrap items-center gap-2">
-                            ${row['Check-In'] && row['Check-Out'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-rose-50 text-rose-700 border border-rose-100"><i data-lucide="calendar-check" class="w-3 h-3 mr-1.5"></i> ${row['Check-In']} to ${row['Check-Out']}</span>` : ''}
-                            ${row['Property Type'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100"><i data-lucide="home" class="w-3 h-3 mr-1.5"></i> ${row['Property Type']}</span>` : ''}
-                            ${row['Location'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100"><i data-lucide="map-pin" class="w-3 h-3 mr-1.5"></i> ${row['Location']}</span>` : ''}
-                            ${row['Guests'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100"><i data-lucide="users" class="w-3 h-3 mr-1.5"></i> ${row['Guests']} Guests</span>` : ''}
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            ${row['Check-In'] && row['Check-Out'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-rose-50 text-rose-700 border border-rose-100 w-fit"><i data-lucide="calendar-check" class="w-2.5 h-2.5 mr-1"></i> ${row['Check-In']} to ${row['Check-Out']}</span>` : ''}
+                            ${row['Property Type'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-indigo-50 text-indigo-700 border border-indigo-100 shadow-sm w-fit"><i data-lucide="home" class="w-2.5 h-2.5 mr-1"></i> ${row['Property Type']}</span>` : ''}
+                            ${row['Location'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-sm w-fit"><i data-lucide="map-pin" class="w-2.5 h-2.5 mr-1"></i> ${row['Location']}</span>` : ''}
+                            ${row['Guests'] ? `<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-purple-50 text-purple-700 border border-purple-100 w-fit"><i data-lucide="users" class="w-2.5 h-2.5 mr-1"></i> ${row['Guests']} Guests</span>` : ''}
                         </div>
                         ${!row['Property Type'] && !row['Location'] && !row['Guests'] && !row['Source'] && !row['Check-In'] ? '<span class="text-xs text-slate-400 italic">None specified</span>' : ''}
                     </div>
