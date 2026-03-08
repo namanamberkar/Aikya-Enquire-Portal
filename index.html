@@ -490,6 +490,67 @@
             </div>
         </section>
 
+        <!-- WhatsApp Modal -->
+        <div id="wa-modal"
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+            <div
+                class="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+                <div class="px-5 py-4 border-b border-brand-100 flex justify-between items-center bg-[#F6F1E9]/30">
+                    <h3 class="font-brand font-bold text-lg text-brand-900 flex items-center gap-2">
+                        <i data-lucide="message-circle" class="w-5 h-5 text-green-500"></i> Send WhatsApp Receipt
+                    </h3>
+                    <button onclick="closeWaModal()"
+                        class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="p-5 space-y-4">
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100 space-y-1.5 text-sm">
+                        <p><span class="text-slate-500">Guest:</span> <strong id="wa-guest-name"
+                                class="text-slate-800"></strong></p>
+                        <p><span class="text-slate-500">Phone:</span> <strong id="wa-guest-phone"
+                                class="text-slate-800"></strong></p>
+                        <p><span class="text-slate-500">Dates:</span> <strong id="wa-guest-dates"
+                                class="text-slate-800"></strong></p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Total Amount (₹)</label>
+                            <input type="number" id="wa-total" oninput="calculateWaBalance()" placeholder="e.g. 5000"
+                                class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm">
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Advance Paid (₹)</label>
+                                <input type="number" id="wa-advance" oninput="calculateWaBalance()"
+                                    placeholder="e.g. 2000"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm">
+                            </div>
+                            <div class="w-24">
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">Discount %</label>
+                                <input type="number" id="wa-discount" oninput="calculateWaBalance()" placeholder="0"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Balance Due (₹)</label>
+                            <input type="number" id="wa-balance" readonly
+                                class="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-brand-900 font-bold text-sm cursor-not-allowed">
+                        </div>
+                    </div>
+                </div>
+                <div class="px-5 py-4 border-t border-slate-100 bg-slate-50 flex justify-end gap-3 pointer-events-auto">
+                    <button onclick="closeWaModal()"
+                        class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-200 rounded-full transition-colors">Cancel</button>
+                    <button onclick="sendWhatsApp()" id="send-wa-btn"
+                        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-full text-sm font-medium shadow-sm shadow-green-600/30 transition-all hover:-translate-y-0.5 active:scale-[0.98]">
+                        <i data-lucide="send" class="w-4 h-4"></i> Send Message
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script>
@@ -503,6 +564,22 @@
         }
 
         lucide.createIcons();
+
+        // WhatsApp Configuration State
+        let waConfig = null;
+        let activeWaEnquiry = null;
+
+        // Fetch WhatsApp Config
+        async function fetchWaConfig() {
+            if (waConfig) return;
+            try {
+                const response = await fetch('./whatsapp-config.json');
+                waConfig = await response.json();
+            } catch (error) {
+                console.error("Failed to load WhatsApp config:", error);
+            }
+        }
+        fetchWaConfig();
 
         let fpCheckIn, fpCheckOut;
 
@@ -811,6 +888,132 @@
             fpCheckOut.clear();
         }
 
+        // --- WhatsApp Modal Logic ---
+
+        // Load WhatsApp config from JSON file
+        fetch('whatsapp-config.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(config => {
+                waConfig = config;
+                console.log("WhatsApp config loaded:", waConfig);
+            })
+            .catch(e => {
+                console.error("Failed to load WhatsApp config:", e);
+                alert("Failed to load WhatsApp configuration. WhatsApp sending will not work.");
+            });
+
+        function openWaModal(id) {
+            const row = window.allEnquiries.find(r => r.ID === id);
+            if (!row) return;
+
+            activeWaEnquiry = row;
+            document.getElementById('wa-guest-name').textContent = row.Name || 'N/A';
+            document.getElementById('wa-guest-phone').textContent = row.Phone || 'N/A';
+            document.getElementById('wa-guest-dates').textContent = (row['Check-In'] && row['Check-Out']) ? `${row['Check-In']} to ${row['Check-Out']}` : 'Not Specified';
+
+            document.getElementById('wa-total').value = '';
+            document.getElementById('wa-advance').value = '';
+            document.getElementById('wa-discount').value = '';
+            document.getElementById('wa-balance').value = '0';
+
+            const modal = document.getElementById('wa-modal');
+            const inner = modal.querySelector('div');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            inner.classList.remove('scale-95');
+            inner.classList.add('scale-100');
+        }
+
+        function closeWaModal() {
+            const modal = document.getElementById('wa-modal');
+            const inner = modal.querySelector('div');
+            inner.classList.remove('scale-100');
+            inner.classList.add('scale-95');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            activeWaEnquiry = null;
+        }
+
+        function calculateWaBalance() {
+            const total = parseFloat(document.getElementById('wa-total').value) || 0;
+            const advance = parseFloat(document.getElementById('wa-advance').value) || 0;
+            const discountPercent = parseFloat(document.getElementById('wa-discount').value) || 0;
+
+            const discountAmount = total * (discountPercent / 100);
+            const balance = total - advance - discountAmount;
+
+            document.getElementById('wa-balance').value = Math.max(0, balance).toFixed(2);
+        }
+
+        async function sendWhatsApp() {
+            if (!waConfig) {
+                alert("WhatsApp Configuration is missing or failed to load. Please check whatsapp-config.json");
+                return;
+            }
+            if (!activeWaEnquiry || !activeWaEnquiry.Phone) {
+                alert("This guest does not have a valid phone number recorded.");
+                return;
+            }
+
+            const btn = document.getElementById('send-wa-btn');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Sending...`;
+            btn.disabled = true;
+            lucide.createIcons();
+
+            // Format phone (ensure country code, remove symbols/spaces)
+            let phone = activeWaEnquiry.Phone.replace(/\D/g, '');
+            if (phone.length === 10) phone = '91' + phone; // Default to India assuming 10 digits
+
+            const total = document.getElementById('wa-total').value || '0';
+            const advance = document.getElementById('wa-advance').value || '0';
+            const balance = document.getElementById('wa-balance').value || '0';
+            const discount = document.getElementById('wa-discount').value || '0';
+
+            // Custom caption appending the details
+            const captionText = `Welcome to Aikya Homestay 🌿\n\n*Booking Details*\nGuest: ${activeWaEnquiry.Name}\nDates: ${activeWaEnquiry['Check-In']} to ${activeWaEnquiry['Check-Out']}\nTotal Amount: ₹${total}\nAdvance Paid: ₹${advance}\nDiscount: ${discount}%\n*Balance Due: ₹${balance}*`;
+
+            const payload = {
+                messaging_product: "whatsapp",
+                to: phone,
+                type: "image",
+                image: {
+                    id: waConfig.IMAGE_ID,
+                    caption: captionText
+                }
+            };
+
+            try {
+                const response = await fetch(waConfig.API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${waConfig.BEARER_TOKEN}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    alert("WhatsApp receipt sent successfully!");
+                    closeWaModal();
+                } else {
+                    console.error("WhatsApp API Error Response:", result);
+                    alert("Failed to send WhatsApp message. Response: " + (result.error?.message || JSON.stringify(result)));
+                }
+            } catch (error) {
+                console.error("WhatsApp Request Error:", error);
+                alert("Network error while trying to send WhatsApp message.");
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
+        }
+
         // Filter functionality for Search Bar
         function filterTable() {
             const query = document.getElementById('search-input').value.toLowerCase();
@@ -892,6 +1095,9 @@
                             <select onchange="updateStatus('${row.ID}', this.value, this)" class="${baseSelectClasses} ${colorClass}">
                                 ${statusOptions}
                             </select>
+                            <button onclick="openWaModal('${row.ID}')" class="p-1.5 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-transparent hover:border-green-200" title="Send WhatsApp">
+                                <i data-lucide="message-square" class="w-4 h-4"></i>
+                            </button>
                             <button onclick="editEnquiry('${row.ID}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Edit Enquiry">
                                 <i data-lucide="edit" class="w-4 h-4"></i>
                             </button>
