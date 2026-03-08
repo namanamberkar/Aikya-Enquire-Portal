@@ -569,10 +569,15 @@
 
             const form = e.target;
             const submitBtn = document.getElementById('submit-btn');
-            const originalBtnHtml = submitBtn.innerHTML;
+            const submitBtnText = document.getElementById('submit-btn-text');
+            const submitBtnIcon = submitBtn.querySelector('i');
 
             submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Saving...`;
+            if (submitBtnText) submitBtnText.textContent = 'Saving...';
+            if (submitBtnIcon) {
+                submitBtnIcon.setAttribute('data-lucide', 'loader-2');
+                submitBtnIcon.classList.add('animate-spin');
+            }
             lucide.createIcons();
             submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
@@ -625,8 +630,16 @@
                 showStatus('error', 'Network error. Make sure your script URL is correct and deployed as Web App.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnHtml;
                 submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+
+                if (submitBtnIcon) {
+                    submitBtnIcon.setAttribute('data-lucide', 'send');
+                    submitBtnIcon.classList.remove('animate-spin');
+                }
+                if (submitBtnText) {
+                    submitBtnText.textContent = editingEnquiryId ? 'Update Enquiry' : 'Submit Enquiry';
+                }
+
                 lucide.createIcons();
             }
         });
@@ -786,11 +799,11 @@
 
         function cancelEdit() {
             editingEnquiryId = null;
-            document.getElementById('form-title-prefix').textContent = 'Record';
-            document.getElementById('form-title-suffix').textContent = 'New Enquiry';
-            document.getElementById('form-subtitle').textContent = 'Add a new lead to the database.';
-            document.getElementById('submit-btn-text').textContent = 'Submit Enquiry';
-            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            if (document.getElementById('form-title-prefix')) document.getElementById('form-title-prefix').textContent = 'Record';
+            if (document.getElementById('form-title-suffix')) document.getElementById('form-title-suffix').textContent = 'New Enquiry';
+            if (document.getElementById('form-subtitle')) document.getElementById('form-subtitle').textContent = 'Add a new lead to the database.';
+            if (document.getElementById('submit-btn-text')) document.getElementById('submit-btn-text').textContent = 'Submit Enquiry';
+            if (document.getElementById('cancel-edit-btn')) document.getElementById('cancel-edit-btn').classList.add('hidden');
 
             const form = document.getElementById('enquiry-form');
             form.reset();
@@ -918,4 +931,3 @@
 </body>
 
 </html>
-
