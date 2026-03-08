@@ -965,7 +965,7 @@
             lucide.createIcons();
 
             // Format phone (ensure country code, remove symbols/spaces)
-            let phone = activeWaEnquiry.Phone.replace(/\D/g, '');
+            let phone = String(activeWaEnquiry.Phone).replace(/\D/g, '');
             if (phone.length === 10) phone = '91' + phone; // Default to India assuming 10 digits
 
             const total = document.getElementById('wa-total').value || '0';
