@@ -15,6 +15,8 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -289,9 +291,10 @@
 
                 <div class="px-4 py-4 sm:px-6 sm:py-5 border-b border-brand-100 bg-[#F6F1E9]/40">
                     <h2 class="text-xl sm:text-2xl font-brand font-bold text-brand-900 flex items-center gap-2">
-                        Record <span>New Enquiry</span>
+                        <span id="form-title-prefix">Record</span> <span id="form-title-suffix">New Enquiry</span>
                     </h2>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1">Add a new lead to the database.</p>
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1" id="form-subtitle">Add a new lead to the database.
+                    </p>
                 </div>
 
                 <form id="enquiry-form" class="p-4 sm:p-6 space-y-3 sm:space-y-5">
@@ -368,10 +371,17 @@
                     <div id="form-status" class="hidden rounded-xl p-4 text-sm font-medium"></div>
 
                     <div class="pt-2">
-                        <button type="submit" id="submit-btn"
-                            class="w-full flex items-center justify-center gap-2 bg-brand-900 hover:bg-brand-500 text-white px-6 py-3 rounded-full font-medium shadow-sm shadow-brand-900/30 transition-all hover:-translate-y-0.5 active:scale-[0.98]">
-                            <i data-lucide="send" class="w-4 h-4"></i> Submit Enquiry
-                        </button>
+                        <div class="flex gap-3">
+                            <button type="button" id="cancel-edit-btn" onclick="cancelEdit()"
+                                class="hidden w-1/3 flex items-center justify-center gap-2 bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-3 rounded-full font-medium transition-all hover:-translate-y-0.5 active:scale-[0.98]">
+                                Cancel
+                            </button>
+                            <button type="submit" id="submit-btn"
+                                class="flex-1 flex items-center justify-center gap-2 bg-brand-900 hover:bg-brand-500 text-white px-6 py-3 rounded-full font-medium shadow-sm shadow-brand-900/30 transition-all hover:-translate-y-0.5 active:scale-[0.98]">
+                                <i data-lucide="send" class="w-4 h-4"></i> <span id="submit-btn-text">Submit
+                                    Enquiry</span>
+                            </button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -494,6 +504,8 @@
 
         lucide.createIcons();
 
+        let fpCheckIn, fpCheckOut;
+
         // Initial Loader Removal
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
@@ -501,6 +513,10 @@
                 loader.classList.add('opacity-0', 'pointer-events-none');
                 setTimeout(() => loader.remove(), 500);
             }, 1500);
+
+            // Initialize flatpickr
+            fpCheckIn = flatpickr("#checkIn", { altInput: true, altFormat: "d-m-Y", dateFormat: "Y-m-d" });
+            fpCheckOut = flatpickr("#checkOut", { altInput: true, altFormat: "d-m-Y", dateFormat: "Y-m-d" });
         });
 
         // ==========================================
@@ -561,6 +577,12 @@
             submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
 
             const formData = new URLSearchParams();
+            if (editingEnquiryId) {
+                formData.append('action', 'update');
+                formData.append('id', editingEnquiryId);
+            } else {
+                formData.append('action', 'create');
+            }
             formData.append('name', form.name.value);
             formData.append('phone', form.phone.value);
             // Date is generated server-side
@@ -586,8 +608,15 @@
                 }
 
                 if (result.status === 'success') {
-                    showStatus('success', 'Enquiry recorded successfully!');
-                    form.reset();
+                    showStatus('success', result.message || 'Enquiry recorded successfully!');
+                    if (editingEnquiryId) {
+                        cancelEdit();
+                        switchTab('list');
+                    } else {
+                        form.reset();
+                        fpCheckIn.clear();
+                        fpCheckOut.clear();
+                    }
                 } else {
                     showStatus('error', result.message || 'Failed to save enquiry.');
                 }
@@ -618,6 +647,9 @@
         }
 
         let isFetching = false;
+        window.allEnquiries = [];
+        let editingEnquiryId = null;
+
         async function fetchEnquiries() {
             if (isFetching) return;
             if (SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE') {
@@ -636,6 +668,7 @@
 
                 if (result.status === 'success') {
                     const data = result.data || [];
+                    window.allEnquiries = data;
                     if (data.length === 0) {
                         showListState('empty');
                     } else {
@@ -709,6 +742,60 @@
             } finally {
                 selectElement.classList.remove('opacity-50', 'pointer-events-none');
             }
+        }
+
+        function editEnquiry(id) {
+            const row = window.allEnquiries.find(r => r.ID === id);
+            if (!row) return;
+
+            editingEnquiryId = id;
+            document.getElementById('form-title-prefix').textContent = 'Edit';
+            document.getElementById('form-title-suffix').textContent = 'Enquiry ' + id;
+            document.getElementById('form-subtitle').textContent = 'Update details for this enquiry.';
+            document.getElementById('submit-btn-text').textContent = 'Update Enquiry';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            const form = document.getElementById('enquiry-form');
+            form.name.value = row.Name || '';
+            form.phone.value = row.Phone || '';
+            form.source.value = row.Source || '';
+            form.guests.value = row.Guests || '';
+            form.propertyType.value = row['Property Type'] || '';
+            form.location.value = row.Location || '';
+            form.message.value = row.Message || '';
+
+            // Convert Check-In / Out from dd-mm-yyyy to yyyy-mm-dd
+            if (row['Check-In']) {
+                let parts = row['Check-In'].split('-');
+                if (parts.length === 3) fpCheckIn.setDate(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                else fpCheckIn.setDate(row['Check-In']);
+            } else {
+                fpCheckIn.clear();
+            }
+
+            if (row['Check-Out']) {
+                let parts = row['Check-Out'].split('-');
+                if (parts.length === 3) fpCheckOut.setDate(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                else fpCheckOut.setDate(row['Check-Out']);
+            } else {
+                fpCheckOut.clear();
+            }
+
+            switchTab('add');
+        }
+
+        function cancelEdit() {
+            editingEnquiryId = null;
+            document.getElementById('form-title-prefix').textContent = 'Record';
+            document.getElementById('form-title-suffix').textContent = 'New Enquiry';
+            document.getElementById('form-subtitle').textContent = 'Add a new lead to the database.';
+            document.getElementById('submit-btn-text').textContent = 'Submit Enquiry';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+
+            const form = document.getElementById('enquiry-form');
+            form.reset();
+            fpCheckIn.clear();
+            fpCheckOut.clear();
         }
 
         // Filter functionality for Search Bar
@@ -788,9 +875,14 @@
                         <div class="text-sm text-slate-600 leading-relaxed" title="${row.Message || ''}">${row.Message ? row.Message.replace(/\n/g, '<br>') : '-'}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap align-top" data-label="Status">
-                        <select onchange="updateStatus('${row.ID}', this.value, this)" class="${baseSelectClasses} ${colorClass}">
-                            ${statusOptions}
-                        </select>
+                        <div class="flex items-center gap-2">
+                            <select onchange="updateStatus('${row.ID}', this.value, this)" class="${baseSelectClasses} ${colorClass}">
+                                ${statusOptions}
+                            </select>
+                            <button onclick="editEnquiry('${row.ID}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200" title="Edit Enquiry">
+                                <i data-lucide="edit" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -815,6 +907,7 @@
                 if (result.status === 'success') {
                     // Update only if data length has changed to prevent over-rendering, or you could do deep compare.
                     // For simplicity, we just safely re-render or re-bind.
+                    window.allEnquiries = result.data || [];
                     renderTable(result.data); // Re-render table smoothly
                 }
             } catch (error) {
